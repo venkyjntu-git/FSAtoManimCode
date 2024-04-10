@@ -151,7 +151,7 @@ class FSA:
                     print(f"\t\tarrow_label = Text('{input_symbol}', font_size=20)",file=out)
                     if start_idx < end_idx:
                         print("\t\tarrow.shift(UP*0.5)",file=out)
-                        print("\t\tarrow_label.shift(arrow.get_center()+UP*0.3+LEFT*0.3)",file=out)
+                        print("\t\tarrow_label.shift(arrow.get_center()+UP*0.3+RIGHT*0.3)",file=out)
                     elif start_idx > end_idx:
                         print("\t\tarrow.shift(DOWN*0.5)",file=out)
                         print("\t\tarrow_label.shift(arrow.get_center()+UP*0.3)",file=out)
