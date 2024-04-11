@@ -1,4 +1,3 @@
-# from manim import *
 class FSA:
     def __init__(self,states,input_symbols,transition_function,initial_state,final_states):
         self.states = states
@@ -6,7 +5,6 @@ class FSA:
         self.delta = transition_function
         self.initialstate = initial_state
         self.finalstates = final_states
-
     def accepted_or_not(self, input_string):
         current_state = self.initialstate
         for symbol in input_string:
@@ -15,20 +13,17 @@ class FSA:
             else:
                 return False
         return current_state in self.finalstates
-
     def print_to_manim(self,input_string):
-        out = open('m48.py', 'w')
+        out = open('manim_fsa.py', 'w')
         print(f'from manim import *', file=out)
         print('\n', file=out)
         print('class DrawFSA(Scene):', file=out)
         print('\tdef construct(self):', file=out)
-
         print("\t\tstart_text = Text('Animation for FSA using Manim', font_size=45)",file=out)
         print("\t\tstart_text1= Text('The initial state is represented with YELLOW colour', font_size=38,font='Times New Roman').shift(DOWN*2)",file=out)
         print("\t\tself.play(Write(start_text),Write(start_text1))",file=out)
         print("\t\tself.play(FadeOut(start_text),FadeOut(start_text1))",file=out)
         print("\t\tself.wait(1) ",file=out)
-
         circle_positions = {
             1: [(0, 0)],
             2: [(2.5, 0), (-2.5, 0)],
@@ -52,7 +47,7 @@ class FSA:
                 else:
                     print(f'\t\tc{state} = Circle(radius=0.7, color=WHITE).shift({x}*RIGHT + {y}*UP)', file=out)
                 if state in self.finalstates:
-                    print(f'\t\tc{state}_inner = Circle(radius=0.5,color=BLUE_C).shift({x}*RIGHT + {y}*UP)', file=out)
+                    print(f'\t\tc{state}_inner = Circle(radius=0.6,color=BLUE_C).shift({x}*RIGHT + {y}*UP)', file=out)
             print(f'\t\tself.add(', end='', file=out)
             for state in self.states:
                 print(f'c{state}, ', end='', file=out)
@@ -62,36 +57,24 @@ class FSA:
         else:
             print('Number of states not supported.', file=out)
 
-        text_positions = {
-            1: [(0, 0)],
-            2: [(2.5, 0), (-2.5, 0)],
-            3: [(2.5, 1.5), (-2.5, 1.5), (2.5, -1.5)],
-            4: [(-2, 1.5),(2, 1.5),(2, -1.5), (-2, -1.5)],
-            5: [(0, 3), (-2, 1), (2, 1), (-2, -2), (2, -2)],
-            6: [(3, 1.5), (-3, 1.5), (3, -1.5), (-3, -1.5), (0, 2.5), (0, -2.5)],
-            7: [(4, 2), (-4, 2), (4, -2), (-4, -2), (0, 3), (2.5, 0.5), (-2.5, 0.5)],
-            8: [(4, 2.5), (-4, 2.5), (4, -2.5), (-4, -2.5), (2, 1), (-2, 1), (2, -1), (-2, -1)],
-            9: [(4.5, 3), (-4.5, 3), (4.5, -3), (-4.5, -3), (2.5, 2), (-2.5, 2), (2.5, -2), (-2.5, -2), (0, 1)],
-            10:[(5, 3.5), (-5, 3.5), (5, -3.5), (-5, -3.5), (2.5, 2.5), (-2.5, 2.5), (2.5, -2.5), (-2.5, -2.5), (0, 2), (3, 0), (-3, 0)]
-        }
 
-        if len(self.states) in text_positions:
-            positions = text_positions[len(self.states)]
+        if len(self.states) in circle_positions:
+            positions1 = circle_positions[len(self.states)]
             for i in range(len(self.states)):
                 state = self.states[i]
-                x, y = positions[i]
+                x, y = positions1[i]
                 print(f'\t\tst_name_{state} = Text("{state}", font_size=24).shift({x}*RIGHT + {y}*UP)', file=out)
             print(f'\t\tself.play(', end='', file=out)
             for state in self.states:
                 print(f'Write(st_name_{state}), ', end='', file=out)
-            print(')', file=out)
+            print(')', file=out) 
+        
         for (start_state, input_symbol), end_state in self.delta.items():
             if input_symbol in self.sigma:
                 start_idx =self.states.index(start_state)
                 end_idx = self.states.index(end_state)
                 print(f"\t\tstart_idx = {self.states.index(start_state)}",file=out)
                 print(f"\t\tend_idx = {self.states.index(end_state)}",file=out)
-
                 if len(self.states) == 1:
                     if start_state == self.states[0]:
                         print(f"\t\tself_arrow = CurvedArrow(start_point=RIGHT, end_point=LEFT, angle=PI).shift(c{start_state}.get_top())", file=out)
@@ -99,7 +82,7 @@ class FSA:
                         print(f"\t\tself.add(self_arrow, self_arrow_label)", file=out)
                         print(f"initial_arrow = Arrow(LEFT*3, c{start_state}.get_left(), color=YELLOW)",file=out)
                         print(f"self.add(initial_arrow)",file=out)
-
+                
                 elif len(self.states) == 2:
                     if start_state==end_state:
                         print(f"\t\tself_arrow_{start_state}{end_state} = CurvedArrow(start_point=RIGHT, end_point=LEFT, angle=PI).shift(c{start_state}.get_top())", file=out)
@@ -109,15 +92,21 @@ class FSA:
                     else:
                         print(f"\t\tarrow_{start_state}{end_state} = Arrow(c{start_state}.get_center(), c{end_state}.get_center(), buff=0.7)",file=out)
                         print(f"\t\tarrow_label_{start_state}{end_state} = Text('{input_symbol}', font_size=18)",file=out)
-                        if start_idx < end_idx:
-                            print(f"\t\tarrow_{start_state}{end_state}.shift(UP*0.4)",file=out)
-                            print(f"\t\tarrow_label_{start_state}{end_state}.next_to(arrow_{start_state}{end_state}, UP)",file=out)
-                        else:
-                            print(f"\t\tarrow_{start_state}{end_state}.shift(DOWN*0.4)",file=out)
-                            print(f"\t\tarrow_label_{start_state}{end_state}.next_to(arrow_{start_state}{end_state}, DOWN)",file=out)
-                        print(f"\t\tself.add(arrow_{start_state}{end_state}, arrow_label_{start_state}{end_state})",file=out)
+                        # if start_idx < end_idx:
+                        #     print(f"\t\tarrow_{start_state}{end_state}.shift(UP*0.4)",file=out)
+                        #     print(f"\t\tarrow_label_{start_state}{end_state}.next_to(arrow_{start_state}{end_state}, UP)",file=out)
+                        # else:
+                        #     print(f"\t\tarrow_{start_state}{end_state}.shift(DOWN*0.4)",file=out)
+                        #     print(f"\t\tarrow_label_{start_state}{end_state}.next_to(arrow_{start_state}{end_state}, DOWN)",file=out)
+                        # print(f"\t\tself.add(arrow_{start_state}{end_state}, arrow_label_{start_state}{end_state})",file=out)
+                        shift_direction = "UP" if start_idx < end_idx else "DOWN"
+                        print(f"\t\tarrow_{start_state}{end_state}.shift({shift_direction}*0.4)", file=out)
+                        print(f"\t\tarrow_label_{start_state}{end_state}.next_to(arrow_{start_state}{end_state}, {shift_direction})", file=out)
+                        print(f"\t\tself.add(arrow_{start_state}{end_state}, arrow_label_{start_state}{end_state})\n\n", file=out)
+
                         print("\n\n",file=out)
-                
+
+
                 elif len(self.states) == 3:
                     if start_state == end_state:
                         if start_state==self.states[1] or start_state==self.states[0]:
@@ -153,6 +142,7 @@ class FSA:
                         print(f"\t\tself.add(arrow_{start_state}{end_state}, arrow_label_{start_state}{end_state})",file=out)
                         print("\n",file=out)
 
+
                 elif len(self.states) == 4:
                     if start_state == end_state:
                         if start_state==self.states[1] or start_state==self.states[0]:
@@ -166,28 +156,50 @@ class FSA:
                             print(f"\t\tself.add(self_arrow_{start_state}{end_state}, self_arrow_label_{start_state}{end_state})", file=out)
                             print("\n\n",file=out)
                     elif (start_state, end_state) in [(self.states[0], self.states[3]), (self.states[3], self.states[0]), (self.states[1], self.states[2]), (self.states[2], self.states[1])]:
-                        print(f"\t\tarrow_{start_state}{end_state} = Arrow(c{start_state}.get_center(), c{end_state}.get_center(), buff=0.8)",file=out)
-                        print(f"\t\tarrow_label_{start_state}{end_state} = Text('{input_symbol}', font_size=20)",file=out)
+                        print(f"\t\tarrow_{start_state}{end_state} = Arrow(c{start_state}.get_center(), c{end_state}.get_center(), buff=0.9)",file=out)
+                        print(f"\t\tarrow_label_{start_state}{end_state} = Text('{input_symbol}', font_size=21)",file=out)
                         if start_idx < end_idx:
-                            print(f"\t\tarrow_{start_state}{end_state}.shift(LEFT*0.4)",file=out)
-                            print(f"\t\tarrow_label_{start_state}{end_state}.shift(arrow_{start_state}{end_state}.get_center()+RIGHT*0.3)",file=out)
+                            print(f"\t\tarrow_{start_state}{end_state}.shift(LEFT*0.3)",file=out)
+                            print(f"\t\tarrow_label_{start_state}{end_state}.shift(arrow_{start_state}{end_state}.get_center()+LEFT*0.3)",file=out)
                         elif start_idx > end_idx:
-                            print(f"\t\tarrow_{start_state}{end_state}.shift(RIGHT*0.4)",file=out)
-                            print(f"\t\tarrow_label_{start_state}{end_state}.shift(arrow_{start_state}{end_state}.get_center()+RIGHT*0.3)",file=out)
+                            print(f"\t\tarrow_{start_state}{end_state}.shift(RIGHT*0.3)",file=out)
+                            print(f"\t\tarrow_label_{start_state}{end_state}.shift(arrow_{start_state}{end_state}.get_center()+RIGHT*0.4)",file=out)
                         print(f"\t\tself.add(arrow_{start_state}{end_state}, arrow_label_{start_state}{end_state})",file=out)
                         print("\n",file=out)
-                    else:
+                    elif (start_state, end_state) in [(self.states[0], self.states[2]), (self.states[2], self.states[0])]:
                         print(f"\t\tarrow_{start_state}{end_state} = Arrow(c{start_state}.get_center(), c{end_state}.get_center(), buff=0.9)",file=out)
                         print(f"\t\tarrow_label_{start_state}{end_state} = Text('{input_symbol}', font_size=20)",file=out)
                         if start_idx < end_idx:
                             print(f"\t\tarrow_{start_state}{end_state}.shift(UP*0.4)",file=out)
-                            print(f"\t\tarrow_label_{start_state}{end_state}.shift(arrow_{start_state}{end_state}.get_center()+UP*0.3+RIGHT*0.3)",file=out)
+                            print(f"\t\tarrow_label_{start_state}{end_state}.shift(arrow_{start_state}{end_state}.get_center()+DOWN*0.3)",file=out)
                         elif start_idx > end_idx:
                             print(f"\t\tarrow_{start_state}{end_state}.shift(DOWN*0.4)",file=out)
-                            print(f"\t\tarrow_label_{start_state}{end_state}.shift(arrow_{start_state}{end_state}.get_center()+UP*0.3)",file=out)
+                            print(f"\t\tarrow_label_{start_state}{end_state}.shift(arrow_{start_state}{end_state}.get_center()+UP*0.5+LEFT*0.4)",file=out)
                         print(f"\t\tself.add(arrow_{start_state}{end_state}, arrow_label_{start_state}{end_state})",file=out)
                         print("\n",file=out)
-
+                    elif (start_state, end_state) in [(self.states[2], self.states[3]), (self.states[3], self.states[2])]:
+                        print(f"\t\tarrow_{start_state}{end_state} = Arrow(c{start_state}.get_center(), c{end_state}.get_center(), buff=0.9)",file=out)
+                        print(f"\t\tarrow_label_{start_state}{end_state} = Text('{input_symbol}', font_size=21)",file=out)
+                        if start_idx > end_idx:
+                            print(f"\t\tarrow_{start_state}{end_state}.shift(UP*0.35)",file=out)
+                            print(f"\t\tarrow_label_{start_state}{end_state}.shift(arrow_{start_state}{end_state}.get_center()+DOWN*0.3)",file=out)
+                        elif start_idx < end_idx:
+                            print(f"\t\tarrow_{start_state}{end_state}.shift(DOWN*0.4)",file=out)
+                            print(f"\t\tarrow_label_{start_state}{end_state}.shift(arrow_{start_state}{end_state}.get_center()+DOWN*0.3+RIGHT*0.5)",file=out)
+                        print(f"\t\tself.add(arrow_{start_state}{end_state}, arrow_label_{start_state}{end_state})",file=out)
+                        print("\n",file=out)
+                    else:
+                        print(f"\t\tarrow_{start_state}{end_state} = Arrow(c{start_state}.get_center(), c{end_state}.get_center(), buff=0.9)",file=out)
+                        print(f"\t\tarrow_label_{start_state}{end_state} = Text('{input_symbol}', font_size=21)",file=out)
+                        if start_idx < end_idx:
+                            print(f"\t\tarrow_{start_state}{end_state}.shift(UP*0.3)",file=out)
+                            print(f"\t\tarrow_label_{start_state}{end_state}.shift(arrow_{start_state}{end_state}.get_center()+UP*0.3)",file=out)
+                        elif start_idx > end_idx:
+                            print(f"\t\tarrow_{start_state}{end_state}.shift(DOWN*0.3)",file=out)
+                            print(f"\t\tarrow_label_{start_state}{end_state}.shift(arrow_{start_state}{end_state}.get_left()+DOWN*0.6+RIGHT*0.2)",file=out)
+                        print(f"\t\tself.add(arrow_{start_state}{end_state}, arrow_label_{start_state}{end_state})",file=out)
+                        print("\n",file=out)
+                
         current_state = self.initialstate
         for symbol in input_string:
             if (current_state, symbol) in self.delta:
@@ -204,86 +216,29 @@ class FSA:
                 break
 
         if current_state in self.finalstates:
-            print(f"\t\tc{state}.set_fill(GREEN, opacity=0.5)", file=out)
-            print(f"\t\ta = Text(f'{input_string} is accepted', font_size=13).next_to(c{current_state}, DOWN)",file=out)
+            for state in self.finalstates:
+                print(f"\t\tc{state}_inner.set_fill(GREEN, opacity=0.5)", file=out)
+            print(f"\t\ta = Text(f'{input_string} is accepted', font_size=24).shift(DOWN*3+LEFT*1)",file=out)
             print(f"\t\tself.play(Write(a))", file=out)
         else:
             print(f"\t\tc{self.initialstate}.set_fill(RED, opacity=0.5)", file=out)
-            print(f"\t\tb = Text(f'{input_string} is not accepted', font_size=13).next_to(c{self.initialstate}, DOWN)",file=out)
+            print(f"\t\tb = Text(f'{input_string} is not accepted', font_size=24).shift(DOWN*3+LEFT*1)",file=out)
             print(f"\t\tself.play(Write(b))", file=out)
         print("\t\tself.wait(1)", file=out)
         print( "\t\tself.wait(5)",file=out)
         out.close()
 
 
-s = ['q0', 'q1', 'q2', 'q3']
+s = ['q0', 'q1', 'q2']
 i = ['a', 'b']
 d = {
-    ('q0', 'a'): 'q1',
-    ('q0', 'b'): 'q0',
-    ('q1', 'a'): 'q0',
-    ('q1', 'b'): 'q1',
-    ('q2', 'a'): 'q3',
-    ('q2', 'b'): 'q0',
-    ('q3', 'a'): 'q1',
-    ('q3', 'b'): 'q3',
+    ('q0', 'a'): 'q1',('q1', 'b'): 'q1',('q1', 'a'): 'q0',
+    ('q0', 'b'): 'q2',('q2', 'a'): 'q1',    
 }
 st = 'q0'
-f = ['q1']
-
+f = ['q1','q2']
 M1 = FSA(s, i, d, st, f)
 M1.print_to_manim("aababb")
-# s1 = ['q0', 'q1','q2']
-# i1 = ['a', 'b']
-# d1 = {
-#     ('q1', 'a'): 'q2',
-#     ('q2', 'b'): 'q0',
-#     ('q0', 'b'): 'q1',
-#     # ('q0', 'a'): 'q1',
-#     # ('q0', 'b'): 'q0',
-#     # ('q1', 'a'): 'q0',
-#     # ('q1', 'b'): 'q1',('q2', 'b'): 'q1',
-#     # ('q3', 'b'): 'q3',('q2', 'b'): 'q2',
-# }
-# st1 = 'q0'
-# f1 = ['q1']
+            
 
-# M1 = FSA(s1, i1, d1, st1, f1)
-# M1.print_to_manim("aababb")
-
-    # ('q2', '0'): 'q2',
-    # ('q0', '1'): 'q1', ('q1', '1'): 'q0',
-    # ('q0', '2'): 'q2', ('q2', '1'): 'q0',
-    # ('q1', '3'): 'q2', ('q2', '5'): 'q1',
-
-#for 4 states
-# d1 = {
-#     ('q0', '0'): 'q0', ('q1', '0'): 'q1', ('q2', '0'): 'q2',('q3', '9'): 'q3',
-#     ('q0', '1'): 'q1', ('q1', '1'): 'q0',
-#     ('q0', '2'): 'q3', ('q3', '1'): 'q0',
-#     ('q3', '3'): 'q2', ('q2', '4'): 'q3',
-#     ('q1', '7'): 'q2', ('q2', '5'): 'q1',
-# }
-#2 states 
-# s3 = ['start', 'end']
-# i3 = ['x', 'y']
-# d3 = {
-#     ('start', 'x'): 'end',
-#     ('start', 'y'): 'start',
-#     ('end', 'x'): 'start',
-#     ('end', 'y'): 'end',
-# }
-# st3 = 'start'
-# f3 = ['end']
-
-
-# s2 = ['A', 'B']
-# i2 = ['0', '1']
-# d2 = {
-#     ('A', '0'): 'B',
-#     ('A', '1'): 'A',
-#     ('B', '0'): 'A',
-#     ('B', '1'): 'B',
-# }
-# st2 = 'A'
-# f2 = ['A']-
+                
