@@ -59,8 +59,6 @@ class FSA:
             print(')', file=out)
         else:
             print('Number of states not supported.', file=out)
-
-
         text_positions = {
             1: [(0, 0)],
             2: [(-2.5, 0), (2.5, 0)],
@@ -114,8 +112,6 @@ class FSA:
                         print(f"\t\tself.add(arrow_{start_state}{end_state}, arrow_label_{start_state}{end_state})\n\n", file=out)
 
                         print("\n\n",file=out)
-
-
                 elif len(self.states) == 3:
                     if start_state == end_state:
                         if start_state==self.states[1] or start_state==self.states[0]:
@@ -150,8 +146,6 @@ class FSA:
                             print(f"\t\tarrow_label_{start_state}{end_state}.shift(arrow_{start_state}{end_state}.get_center()+UP*0.3)",file=out)
                         print(f"\t\tself.add(arrow_{start_state}{end_state}, arrow_label_{start_state}{end_state})",file=out)
                         print("\n",file=out)
-
-
                 elif len(self.states) == 4:
                     if start_state == end_state:
                         if start_state==self.states[1] or start_state==self.states[0]:
@@ -207,8 +201,9 @@ class FSA:
                             print(f"\t\tarrow_{start_state}{end_state}.shift(DOWN*0.3)",file=out)
                             print(f"\t\tarrow_label_{start_state}{end_state}.shift(arrow_{start_state}{end_state}.get_left()+DOWN*0.6+RIGHT*0.2)",file=out)
                         print(f"\t\tself.add(arrow_{start_state}{end_state}, arrow_label_{start_state}{end_state})",file=out)
-                        print("\n",file=out)
-                
+                        print("\n",file=out) 
+                        
+                             
         current_state = self.initialstate
         for symbol in input_string:
             if (current_state, symbol) in self.delta:
@@ -222,16 +217,21 @@ class FSA:
             else:
                 print("\t\t#Transition not defined for current state and symbol",file=out)
                 break
-
         if current_state in self.finalstates:
             for state in self.finalstates:
                 print(f"\t\tc{state}_inner.set_fill(GREEN, opacity=0.5)", file=out)
-            print(f"\t\ta = Text(f'{input_string} is accepted', font_size=24).shift(DOWN*3+LEFT*1)",file=out)
+            if len(self.states) == 4:
+                print(f"\t\ta = Text(f'{input_string} is accepted', font_size=24).shift(DOWN*3+LEFT*1)",file=out)
+            else:
+                print(f"\t\ta = Text(f'{input_string} is accepted', font_size=20).shift(RIGHT*5)",file=out)
             print(f"\t\tself.play(Write(a))", file=out)
         else:
             print(f"\t\tc{self.initialstate}.set_fill(RED, opacity=0.5)", file=out)
-            print(f"\t\tb = Text(f'{input_string} is not accepted', font_size=24).shift(DOWN*3+LEFT*1)",file=out)
-            print(f"\t\tself.play(Write(b))", file=out)
+            if len(self.states) == 4:
+                print(f"\t\ta = Text(f'{input_string} is accepted', font_size=24).shift(DOWN*3+LEFT*1)",file=out)
+            else:
+                print(f"\t\ta = Text(f'{input_string} is accepted', font_size=20).shift(RIGHT*5)",file=out)
+            print(f"\t\tself.play(Write(a))", file=out)
         print("\t\tself.wait(1)", file=out)
         print( "\t\tself.wait(5)",file=out)
         out.close()
@@ -243,6 +243,6 @@ i=['a','b']
 #Transitions:
 d={('q0','a'):'q1',('q0','b'):'q0',('q1','a'):'q1',('q1','b'):'q2',('q2','a'):'q1',('q2','b'):'q0'}
 st='q0'
-f=['q2']
+f='q2'
 M1 = FSA(s, i, d, st, f)
 M1.print_to_manim()
