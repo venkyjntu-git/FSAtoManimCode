@@ -217,21 +217,21 @@ class FSA:
             else:
                 print("\t\t#Transition not defined for current state and symbol",file=out)
                 break
-        if current_state in self.finalstates:
-            for state in self.finalstates:
-                print(f"\t\tc{state}_inner.set_fill(GREEN, opacity=0.5)", file=out)
-            if len(self.states) == 4:
-                print(f"\t\ta = Text(f'{input_string} is accepted', font_size=24).shift(DOWN*3+LEFT*1)",file=out)
-            else:
-                print(f"\t\ta = Text(f'{input_string} is accepted', font_size=20).shift(RIGHT*5)",file=out)
-            print(f"\t\tself.play(Write(a))", file=out)
-        else:
-            print(f"\t\tc{self.initialstate}.set_fill(RED, opacity=0.5)", file=out)
-            if len(self.states) == 4:
-                print(f"\t\ta = Text(f'{input_string} is accepted', font_size=24).shift(DOWN*3+LEFT*1)",file=out)
-            else:
-                print(f"\t\ta = Text(f'{input_string} is accepted', font_size=20).shift(RIGHT*5)",file=out)
-            print(f"\t\tself.play(Write(a))", file=out)
+        # if current_state in self.finalstates:
+        #     for state in self.finalstates:
+        #         print(f"\t\tc{state}_inner.set_fill(GREEN, opacity=0.5)", file=out)
+        #     if len(self.states) == 4:
+        #         print(f"\t\ta = Text(f'{input_string} is accepted', font_size=24).shift(DOWN*3+LEFT*1)",file=out)
+        #     else:
+        #         print(f"\t\ta = Text(f'{input_string} is accepted', font_size=20).shift(RIGHT*5)",file=out)
+        #     print(f"\t\tself.play(Write(a))", file=out)
+        # else:
+        #     print(f"\t\tc{self.initialstate}.set_fill(RED, opacity=0.5)", file=out)
+        #     if len(self.states) == 4:
+        #         print(f"\t\ta = Text(f'{input_string} is accepted', font_size=24).shift(DOWN*3+LEFT*1)",file=out)
+        #     else:
+        #         print(f"\t\ta = Text(f'{input_string} is accepted', font_size=20).shift(RIGHT*5)",file=out)
+        #     print(f"\t\tself.play(Write(a))", file=out)
         print("\t\tself.wait(1)", file=out)
         print( "\t\tself.wait(5)",file=out)
         out.close()
